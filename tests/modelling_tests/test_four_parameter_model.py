@@ -80,16 +80,16 @@ class FourParameterModelTests(CLIModeTest):
         # If you run this experiment with the C_heater=1e-2 and G_heater=1e-2, then you will get the two models being mostly equivalent.
         params = four_param_model_params
         # CWD: Example_Digital-Twin_Incubator\software\
-        data, _ = load_data("./datasets/calibration_fan_24v/semi_random_movement.csv",
+        data, _ = load_data("./datasets/controller_tunning/exp2_ht20_hg30.csv",
                                      desired_timeframe=(-math.inf, math.inf))
 
-        results_4p, sol = run_experiment_four_parameter_model(data, params)
+        results_4p, sol_4p = run_experiment_four_parameter_model(data, params)
 
         params = [616.56464029,  # C_air
                   0.65001889]  # G_box
         params = two_param_model_params
 
-        results_2p, sol = run_experiment_two_parameter_model(data, params)
+        results_2p, sol_2p = run_experiment_two_parameter_model(data, params)
 
         fig, (ax1) = plt.subplots(1, 1)
 
@@ -100,8 +100,14 @@ class FourParameterModelTests(CLIModeTest):
         ax1.plot(data["time"], data["average_temperature"], label="average_temperature")
         ax1.legend()
 
+        # Add data to dataframe, in case we want to export it.
+        data["2P_Model"] = sol_2p.y[1,:]
+        data["4P_Model"] = sol_4p.y[1,:]
+
         if self.ide_mode():
             plt.show()
+            data.to_csv("exported_exp2_ht20_hg30.csv",sep=',')
+
 
     def test_show_symbolic_equations(self):
         # Parameters
