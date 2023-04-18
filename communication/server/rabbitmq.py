@@ -1,5 +1,6 @@
 import pika
 import logging
+import ssl as ssl_package
 
 from communication.shared.protocol import *
 
@@ -12,19 +13,23 @@ class Rabbitmq:
                  vhost,
                  exchange,
                  type,
-                 ssl_context = None,
+                 ssl = None,
                  ):
+        self._l = logging.getLogger("RabbitMQClass")
         self.vhost = vhost
         self.exchange_name = exchange
         self.exchange_type = type
         
         credentials = pika.PlainCredentials(username, password)
-        if ssl_context is None:
+        if ssl is None:
             self.parameters = pika.ConnectionParameters(ip,
                                                         port,
                                                         vhost,
                                                         credentials)
         else:
+            ssl_context = ssl_package.SSLContext(getattr(ssl_package, ssl["protocol"]))
+            ssl_context.set_ciphers(ssl["ciphers"])
+
             self.parameters = pika.ConnectionParameters(ip,
                                                         port,
                                                         vhost,
@@ -33,7 +38,7 @@ class Rabbitmq:
         self.connection = None
         self.channel = None
         self.queue_name = []
-        self._l = logging.getLogger("RabbitMQClass")
+        
 
     def __del__(self):
         self._l.debug("Deleting queues, close channel and connection")
