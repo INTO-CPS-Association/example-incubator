@@ -16,16 +16,22 @@ if __name__ == '__main__':
         "vhost": "/"
     }
 
-    receiver = Rabbitmq(**rabbbitmq_config)
-    receiver.connect_to_server()
-    qname = receiver.declare_local_queue(routing_key="test")
+    with Rabbitmq(**rabbbitmq_config) as connection:
 
-    sender = Rabbitmq(**rabbbitmq_config)
-    sender.connect_to_server()
-    sender.send_message(routing_key="test", message={"text": "321"})
+        qname = connection.declare_local_queue(routing_key="test")
 
-    time.sleep(0.01)  # in case too fast that the message has not been delivered.
+        print("Sending message...")
+        connection.send_message(routing_key="test", message={"text": "321"})
+        print("Message sent.")
 
-    msg = receiver.get_message(queue_name=qname)
-    print("received message is", msg)
+        msg = None
+        print("Retrieving message.", end="")
+        while msg is None:
+            msg = connection.get_message(queue_name=qname)
+            if msg is not None:
+                print(" Received message is", msg)
+            else:
+                print(".", end="")
+                time.sleep(0.1)  # in case too fast that the message has not been delivered.
+
 

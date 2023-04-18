@@ -11,17 +11,25 @@ class Rabbitmq:
                  password,
                  vhost,
                  exchange,
-                 type
+                 type,
+                 ssl_context = None,
                  ):
         self.vhost = vhost
         self.exchange_name = exchange
         self.exchange_type = type
-
+        
         credentials = pika.PlainCredentials(username, password)
-        self.parameters = pika.ConnectionParameters(ip,
-                                                    port,
-                                                    vhost,
-                                                    credentials)
+        if ssl_context is None:
+            self.parameters = pika.ConnectionParameters(ip,
+                                                        port,
+                                                        vhost,
+                                                        credentials)
+        else:
+            self.parameters = pika.ConnectionParameters(ip,
+                                                        port,
+                                                        vhost,
+                                                        credentials,
+                                                        ssl_options=pika.SSLOptions(context=ssl_context))
         self.connection = None
         self.channel = None
         self.queue_name = []
