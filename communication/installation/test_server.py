@@ -15,6 +15,22 @@ if __name__ == '__main__':
         "type": "topic",
         "vhost": "/"
     }
+    
+    # Example configuration for AMAZON AWS MQ Service. From https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-rabbitmq-pika.html
+
+    # import ssl
+    # ssl_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    # ssl_context.set_ciphers('ECDHE+AESGCM:!ECDSA')
+    # rabbbitmq_config = {
+    #     "ip": "b-14c95d1b-b988-4039-a4fe-b5c6744b8a97.mq.eu-north-1.amazonaws.com",
+    #     "port": 5671,
+    #     "username": "CONTACT_CLAUDIO",
+    #     "password": "CONTACT_CLAUDIO",
+    #     "exchange": "example_exchange",
+    #     "type": "topic",
+    #     "vhost": "incubator",
+    #     "ssl_context": ssl_context
+    # }
 
     with Rabbitmq(**rabbbitmq_config) as connection:
 
