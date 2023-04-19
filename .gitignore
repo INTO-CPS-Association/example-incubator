@@ -3,3 +3,4 @@
 /.idea
 /docs/_build
 .vscode
+communication/installation/test_server_aws.py
