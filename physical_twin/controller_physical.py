@@ -7,18 +7,6 @@ from communication.server.rabbitmq import Rabbitmq, ROUTING_KEY_STATE, ROUTING_K
     from_ns_to_s, ROUTING_KEY_CONTROLLER
 from communication.shared.protocol import ROUTING_KEY_COSIM_PARAM
 
-LINE_PRINT_FORMAT = {
-    "time": "{:20}",
-    "execution_interval": "{:<2.1f}",
-    "elapsed": "{:<2.1f}",
-    "heater_on": "{:10}",
-    "fan_on": "{:10}",
-    "t1": "{:<6.2f}",
-    "box_air_temperature": "{:<15.2f}",
-    "state": "{:6}"
-}
-
-
 class ControllerPhysical:
     def __init__(self, rabbit_config, temperature_desired=35.0, lower_bound=5.0, heating_time=20.0,
                  heating_gap=30.0):
@@ -41,9 +29,9 @@ class ControllerPhysical:
         self.header_written = False
 
     def _record_message(self, message):
-        sensor1_reading = message['fields']['t1']
+        sensor_room = message['fields']['t3']
         self.box_air_temperature = message['fields']['average_temperature']
-        self.room_temperature = sensor1_reading
+        self.room_temperature = sensor_room
 
     def safe_protocol(self):
         self._l.debug("Stopping Fan")
@@ -109,15 +97,15 @@ class ControllerPhysical:
 
     def print_terminal(self, message):
         if not self.header_written:
-            print("{:15}{:20}{:9}{:11}{:8}{:7}{:21}{:6}".format(
-                "time", "execution_interval", "elapsed", "heater_on", "fan_on", "t1", "box_air_temperature", "state"
+            print("{:16}{:15}{:9}{:11}{:8}{:7}{:21}{:6}".format(
+                "time", "exec_interval", "elapsed", "heater_on", "fan_on", "room", "box_air_temperature", "state"
             ))
             self.header_written = True
 
-        print("{:%d/%m %H:%M:%S}  {:<20.2f}{:<9.2f}{:11}{:8}{:<7.2f}{:<21.2f}{:6}".format(
+        print("{:%d/%m %H:%M:%S}  {:<15.2f}{:<9.2f}{:11}{:8}{:<7.2f}{:<21.2f}{:6}".format(
             datetime.fromtimestamp(from_ns_to_s(message["time"])), message["fields"]["execution_interval"],
             message["fields"]["elapsed"],
-            str(self.heater_ctrl), str(message["fields"]["fan_on"]), message["fields"]["t1"],
+            str(self.heater_ctrl), str(message["fields"]["fan_on"]), self.room_temperature,
             self.box_air_temperature, self.current_state
         ))
 

@@ -8,18 +8,6 @@ from communication.server.rabbitmq import Rabbitmq, ROUTING_KEY_STATE, ROUTING_K
 from communication.shared.protocol import ROUTING_KEY_UPDATE_CTRL_PARAMS
 from models.controller_models.controller_open_loop import ControllerOpenLoopSM
 
-LINE_PRINT_FORMAT = {
-    "time": "{:20}",
-    "execution_interval": "{:<2.1f}",
-    "elapsed": "{:<2.1f}",
-    "heater_on": "{:10}",
-    "fan_on": "{:10}",
-    "t1": "{:<6.2f}",
-    "box_air_temperature": "{:<15.2f}",
-    "state": "{:6}"
-}
-
-
 class ControllerPhysicalOpenLoop:
     def __init__(self, rabbit_config,
                  n_samples_period,  # Total number of samples considered
